@@ -1,0 +1,10 @@
+name: $name
+version: $version
+main: world.komq.hardcore.plugin.HardcorePlugin
+author: Komtents Dev Team (Dytroc, HighRight, ContentManager)
+description: A Hardcore SMP plugin
+api-version: 1.20
+libraries:
+  - org.jetbrains.kotlin:kotlin-stdlib:1.9.0
+  - cloud.commandframework:cloud-paper:1.8.4
+  - io.github.monun:tap-core:4.9.8
