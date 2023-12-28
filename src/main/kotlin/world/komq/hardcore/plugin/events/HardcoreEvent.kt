@@ -63,8 +63,12 @@ object HardcoreEvent : Listener {
                 it.getAdvancementProgress(advancement).awardCriteria(criterion)
 
                 if (server.advancementIterator().asSequence()
-                        .filter { advc -> !advc.key.value().contains("recipes") && !advc.key.value().endsWith("root") && advc.root == advancement.root }
-                        .all {  advc -> it.getAdvancementProgress(advc).isDone }) {
+                        .filter { advc ->
+                            !advc.key.value().contains("recipes") && !advc.key.value()
+                                .endsWith("root") && advc.root == advancement.root
+                        }
+                        .all { advc -> it.getAdvancementProgress(advc).isDone }
+                ) {
 
                     isRootAdvancementDone = true
                 }
@@ -86,7 +90,9 @@ object HardcoreEvent : Listener {
         createCorpseNPC(player, player.location.clone().apply {
             pitch = 0f
             yaw = 0f
-            while (block.type.isAir) { y -= 0.005 }
+            while (block.type.isAir) {
+                y -= 0.005
+            }
         })
 
         player.inventory.clear()
@@ -105,9 +111,12 @@ object HardcoreEvent : Listener {
     fun PlayerToggleSneakEvent.onToggleSneak() {
         if (isSneaking) {
             fakePlayers.find {
-                it.bukkitEntity.location.distance(player.location) <= 1.5 ||
-                        it.bukkitEntity.location.clone().subtract(1.0, 0.0, 0.0).distance(player.location) <= 1.5 ||
-                        it.bukkitEntity.location.clone().subtract(2.0, 0.0, 0.0).distance(player.location) <= 1.5
+                it.location.world == player.location.world &&
+                        (it.bukkitEntity.location.distance(player.location) <= 1.5 ||
+                                it.bukkitEntity.location.clone().subtract(1.0, 0.0, 0.0)
+                                    .distance(player.location) <= 1.5 ||
+                                it.bukkitEntity.location.clone().subtract(2.0, 0.0, 0.0)
+                                    .distance(player.location) <= 1.5)
             }?.let {
                 openInventory(player, it)
             }
