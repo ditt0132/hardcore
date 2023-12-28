@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     idea
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.21"
     id("xyz.jpenilla.run-paper") version "2.1.0"
 }
 
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(kotlin("stdlib"))
+    compileOnly(kotlin("stdlib", "1.9.21"))
     compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
     compileOnly("cloud.commandframework:cloud-paper:1.8.4")
     compileOnly("io.github.monun:tap-api:4.9.8")
