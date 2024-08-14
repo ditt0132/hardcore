@@ -129,6 +129,6 @@ object HardcoreEvent : Listener {
     @EventHandler
     fun PaperServerListPingEvent.onServerListPing() {
         setHidePlayers(true)
-        motd(text("HARDCORE", NamedTextColor.RED).decorate(TextDecoration.BOLD))
+        motd(text("hi, hardcore!", NamedTextColor.RED).decorate(TextDecoration.BOLD))
     }
 }
