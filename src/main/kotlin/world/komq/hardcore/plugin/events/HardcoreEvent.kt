@@ -6,6 +6,9 @@
 
 package world.komq.hardcore.plugin.events
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent
 import com.destroystokyo.paper.event.player.PlayerUseUnknownEntityEvent
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
@@ -81,11 +84,6 @@ object HardcoreEvent : Listener {
     }
 
     @EventHandler
-    fun AsyncChatEvent.onChat() {
-        if (!player.isOp) isCancelled = true
-    }
-
-    @EventHandler
     fun PlayerDeathEvent.onDeath() {
         createCorpseNPC(player, player.location.clone().apply {
             pitch = 0f
@@ -96,7 +94,7 @@ object HardcoreEvent : Listener {
         })
 
         player.inventory.clear()
-        player.banPlayer(" ")
+        player.banPlayer(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm"))+"에 사망했어요!\n"+LegacyComponentSerializer.legacySection().serialize(deathMessage))
         deathMessage(null)
     }
 
