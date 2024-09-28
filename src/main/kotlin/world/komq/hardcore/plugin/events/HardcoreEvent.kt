@@ -12,8 +12,10 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import com.destroystokyo.paper.event.player.PlayerAdvancementCriterionGrantEvent
 import com.destroystokyo.paper.event.player.PlayerUseUnknownEntityEvent
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent
+import io.papermc.paper.advancement.AdvancementDisplay
 import io.papermc.paper.event.player.AsyncChatEvent
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.event.EventHandler
@@ -23,6 +25,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
+import world.komq.hardcore.plugin.HardcorePlugin
 import world.komq.hardcore.plugin.objects.HardcoreGameManager.createCorpseNPC
 import world.komq.hardcore.plugin.objects.HardcoreGameManager.fakePlayers
 import world.komq.hardcore.plugin.objects.HardcoreGameManager.fakeServer
@@ -39,16 +42,6 @@ object HardcoreEvent : Listener {
     fun PlayerJoinEvent.onJoin() {
         fakeServer.addPlayer(player)
         joinMessage(null)
-
-        server.onlinePlayers.filter { player.uniqueId != it.uniqueId }.forEach { otherP ->
-            server.advancementIterator().forEach { advancement ->
-                if (!advancement.key().value().contains("recipes")) {
-                    otherP.getAdvancementProgress(advancement).awardedCriteria.forEach { criterion ->
-                        player.getAdvancementProgress(advancement).awardCriteria(criterion)
-                    }
-                }
-            }
-        }
     }
 
     @EventHandler
@@ -59,28 +52,11 @@ object HardcoreEvent : Listener {
 
     @EventHandler
     fun PlayerAdvancementCriterionGrantEvent.onCriterionGrant() {
-        var isRootAdvancementDone = false
-
-        server.onlinePlayers.forEach {
-            if (!advancement.key().value().contains("recipes")) {
-                it.getAdvancementProgress(advancement).awardCriteria(criterion)
-
-                if (server.advancementIterator().asSequence()
-                        .filter { advc ->
-                            !advc.key.value().contains("recipes") && !advc.key.value()
-                                .endsWith("root") && advc.root == advancement.root
-                        }
-                        .all { advc -> it.getAdvancementProgress(advc).isDone }
-                ) {
-
-                    isRootAdvancementDone = true
-                }
-            }
+        if (advancement.display?.frame() == AdvancementDisplay.Frame.CHALLENGE) {
+            HardcorePlugin.instance.logger.info("Usable unbans: " + ++usableUnbans + " ("+(advancement.displayName() as TextComponent).examinableName())
         }
-
-        if (isRootAdvancementDone) {
-            ++usableUnbans
-        }
+        HardcorePlugin.instance.logger.info("isNull: "+(advancement.display != null))
+        HardcorePlugin.instance.logger.info(advancement.display?.frame()?.name)
     }
 
     @EventHandler
@@ -94,7 +70,9 @@ object HardcoreEvent : Listener {
         })
 
         player.inventory.clear()
-        player.banPlayer(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm"))+"에 사망했어요!\n"+LegacyComponentSerializer.legacySection().serialize(deathMessage))
+        player.banPlayer(
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm")) + "에 사망했어요!\n" + deathMessage
+        )
         deathMessage(null)
     }
 
@@ -123,7 +101,9 @@ object HardcoreEvent : Listener {
 
     @EventHandler
     fun PlayerCommandPreprocessEvent.onCommandPreProcess() {
-        if (!player.isOp) isCancelled = true
+        isCancelled = !(message.startsWith("/unbans")
+                || message.startsWith("/near")
+                || player.isOp)
     }
 
     @EventHandler

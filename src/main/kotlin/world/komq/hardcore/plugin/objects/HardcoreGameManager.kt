@@ -23,6 +23,8 @@ import world.komq.hardcore.plugin.HardcorePlugin
 import world.komq.hardcore.plugin.config.HardcoreCorpseData
 import world.komq.hardcore.plugin.events.HardcoreEvent
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 /**
  * @author Komtents Dev Team
@@ -39,6 +41,7 @@ object HardcoreGameManager {
     val corpses = arrayListOf<HardcoreCorpseData>()
     var usableUnbans = plugin.config.getInt("usableUnbans")
     var taskId = 0
+    val advancements = HashSet<String>();
 
     fun start() {
         server.worlds.forEach {

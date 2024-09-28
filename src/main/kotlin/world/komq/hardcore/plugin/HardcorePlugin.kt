@@ -9,6 +9,7 @@ package world.komq.hardcore.plugin
 import cloud.commandframework.execution.CommandExecutionCoordinator
 import cloud.commandframework.paper.PaperCommandManager
 import org.bukkit.configuration.serialization.ConfigurationSerialization.registerClass
+import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import world.komq.hardcore.plugin.commands.HardcoreCommand
 import world.komq.hardcore.plugin.config.HardcoreCorpseData
@@ -65,6 +66,24 @@ class HardcorePlugin : JavaPlugin() {
                     "unban",
                     { "Custom unban command" }
                 )
+            )
+        )
+
+        commandManager.command(
+            HardcoreCommand.unbansCommand(
+                commandManager.commandBuilder(
+                    "unbans",
+                    { "Prints usasble unbans" }
+                )
+            )
+        )
+
+        commandManager.command(
+            HardcoreCommand.nearCommand(
+                commandManager.commandBuilder(
+                    "near",
+                    { "Get nearby players" }
+                ).senderType(Player::class.java)
             )
         )
     }
